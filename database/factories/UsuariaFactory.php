@@ -44,4 +44,14 @@ class UsuariaFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Indicate that the identity verification was approved.
+     */
+    public function aprobada(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'estado_verificacion' => 'aprobada',
+        ]);
+    }
 }

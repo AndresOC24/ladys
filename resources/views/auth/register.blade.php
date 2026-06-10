@@ -16,6 +16,35 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Rol -->
+        <div class="mt-4">
+            <x-input-label for="rol_id" :value="__('Quiero registrarme como')" />
+            <select id="rol_id" name="rol_id" required
+                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <option value="" disabled {{ old('rol_id') ? '' : 'selected' }}>{{ __('Selecciona una opción') }}</option>
+                @foreach ($roles as $rol)
+                    <option value="{{ $rol->id }}" {{ old('rol_id') == $rol->id ? 'selected' : '' }}>
+                        {{ ucfirst($rol->nombre) }}
+                    </option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('rol_id')" class="mt-2" />
+        </div>
+
+        <!-- Telefono -->
+        <div class="mt-4">
+            <x-input-label for="telefono" :value="__('Teléfono')" />
+            <x-text-input id="telefono" class="block mt-1 w-full" type="tel" name="telefono" :value="old('telefono')" required autocomplete="tel" />
+            <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
+        </div>
+
+        <!-- Fecha de nacimiento -->
+        <div class="mt-4">
+            <x-input-label for="fecha_nacimiento" :value="__('Fecha de nacimiento')" />
+            <x-text-input id="fecha_nacimiento" class="block mt-1 w-full" type="date" name="fecha_nacimiento" :value="old('fecha_nacimiento')" required />
+            <x-input-error :messages="$errors->get('fecha_nacimiento')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
