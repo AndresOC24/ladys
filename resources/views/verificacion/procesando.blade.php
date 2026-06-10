@@ -1,16 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
             {{ __('Verificación de identidad') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white p-10 rounded-md shadow-sm text-center"
+            <div class="bg-white p-10 rounded-2xl border border-primary-100 shadow-sm text-center"
                 x-data="pollingEstado('{{ route('verificacion.estado-json') }}', '{{ route('verificacion.resultado') }}')">
 
-                <div class="mx-auto w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <div class="mx-auto w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
 
                 <h3 class="mt-6 text-lg font-bold text-gray-900">{{ __('Estamos verificando tu identidad') }}</h3>
                 <p class="mt-2 text-sm text-gray-600">

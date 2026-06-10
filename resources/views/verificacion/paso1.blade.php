@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
             {{ __('Verificación de identidad — Paso 1') }}
         </h2>
     </x-slot>
@@ -9,7 +9,7 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             @include('verificacion._pasos', ['actual' => 1])
 
-            <div class="bg-white p-6 rounded-md shadow-sm">
+            <div class="bg-white p-6 rounded-2xl border border-primary-100 shadow-sm">
                 <h3 class="text-lg font-bold text-gray-900">{{ __('Confirma tus datos personales') }}</h3>
                 <p class="mt-1 text-sm text-gray-600">
                     {{ __('Estos datos se contrastarán con la información extraída de tu cédula de identidad.') }}

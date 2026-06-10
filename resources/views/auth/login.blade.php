@@ -1,4 +1,7 @@
 <x-guest-layout>
+    <h1 class="text-xl font-bold text-slate-900 mb-1">{{ __('Inicia sesión') }}</h1>
+    <p class="text-sm text-slate-500 mb-6">{{ __('Bienvenida de vuelta a tu espacio seguro.') }}</p>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

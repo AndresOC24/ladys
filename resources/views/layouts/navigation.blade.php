@@ -1,12 +1,15 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white/80 backdrop-blur border-b border-primary-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2" aria-label="Lady's On Go">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 text-white">
+                            <x-application-logo class="w-5 h-5" />
+                        </span>
+                        <span class="font-extrabold tracking-tight text-primary-900 hidden sm:inline">Lady's <span class="text-primary-500">On Go</span></span>
                     </a>
                 </div>
 

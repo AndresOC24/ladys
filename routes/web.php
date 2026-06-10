@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Rutas públicas
 |--------------------------------------------------------------------------
-| Landing, login y registro (estas dos últimas en routes/auth.php).
+| La raíz dirige al login; login y registro viven en routes/auth.php.
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 /*

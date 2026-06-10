@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
             {{ __('Verificación de identidad — Paso 3') }}
         </h2>
     </x-slot>
@@ -9,7 +9,7 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             @include('verificacion._pasos', ['actual' => 3])
 
-            <div class="bg-white p-6 rounded-md shadow-sm"
+            <div class="bg-white p-6 rounded-2xl border border-primary-100 shadow-sm"
                 x-data="capturaFacial('{{ route('verificacion.paso3.guardar') }}', '{{ csrf_token() }}')">
 
                 <h3 class="text-lg font-bold text-gray-900">{{ __('Captura de tu rostro en vivo') }}</h3>
@@ -31,17 +31,20 @@
 
                     <div class="flex gap-3">
                         <button type="button" x-show="!foto" @click="capturar()" :disabled="!listo"
-                            class="inline-flex items-center px-4 py-2 bg-indigo-600 disabled:opacity-50 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-indigo-500">
-                            📸 {{ __('Capturar') }}
+                            class="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 disabled:opacity-50 border border-transparent rounded-xl font-semibold text-sm text-white shadow-sm shadow-primary-200 hover:from-primary-600 hover:to-accent-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition duration-200 cursor-pointer">
+                            <x-icono nombre="camara" class="w-5 h-5" /> {{ __('Capturar') }}
                         </button>
                         <button type="button" x-show="foto && !enviando" @click="repetir()"
-                            class="inline-flex items-center px-4 py-2 bg-gray-200 rounded-md font-semibold text-sm text-gray-700 hover:bg-gray-300">
-                            ↺ {{ __('Repetir') }}
+                            class="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 bg-white border border-primary-200 rounded-xl font-semibold text-sm text-slate-700 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition duration-200 cursor-pointer">
+                            <x-icono nombre="repetir" class="w-5 h-5" /> {{ __('Repetir') }}
                         </button>
                         <button type="button" x-show="foto" @click="enviar()" :disabled="enviando"
-                            class="inline-flex items-center px-4 py-2 bg-green-600 disabled:opacity-50 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-green-500">
-                            <span x-show="!enviando">✓ {{ __('Enviar y verificar') }}</span>
-                            <span x-show="enviando">{{ __('Enviando…') }}</span>
+                            class="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 bg-green-600 disabled:opacity-50 border border-transparent rounded-xl font-semibold text-sm text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 cursor-pointer">
+                            <span x-show="!enviando" class="inline-flex items-center gap-2"><x-icono nombre="aprobado" class="w-5 h-5" /> {{ __('Enviar y verificar') }}</span>
+                            <span x-show="enviando" class="inline-flex items-center gap-2">
+                                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                                {{ __('Enviando…') }}
+                            </span>
                         </button>
                     </div>
                 </div>

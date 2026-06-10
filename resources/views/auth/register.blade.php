@@ -1,4 +1,7 @@
 <x-guest-layout>
+    <h1 class="text-xl font-bold text-slate-900 mb-1">{{ __('Crea tu cuenta') }}</h1>
+    <p class="text-sm text-slate-500 mb-6">{{ __('Únete a la comunidad de transporte exclusivo para mujeres.') }}</p>
+
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
