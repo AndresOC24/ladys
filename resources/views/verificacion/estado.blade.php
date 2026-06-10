@@ -54,6 +54,21 @@
                 </div>
             </div>
 
+            @if (in_array($usuaria->estado_verificacion, ['pendiente', 'rechazada']))
+                <div class="mt-6">
+                    <a href="{{ route('verificacion.paso1') }}"
+                        class="inline-flex items-center px-4 py-2 bg-indigo-600 rounded-md font-semibold text-sm text-white hover:bg-indigo-500">
+                        {{ $usuaria->estado_verificacion === 'rechazada' ? __('Intentar nuevamente') : __('Iniciar verificación') }}
+                    </a>
+                </div>
+            @elseif ($usuaria->estado_verificacion === 'en_proceso')
+                <div class="mt-6">
+                    <a href="{{ route('verificacion.procesando') }}" class="text-sm text-indigo-600 underline">
+                        {{ __('Ver progreso de la verificación') }}
+                    </a>
+                </div>
+            @endif
+
             <div class="mt-6 bg-white p-6 rounded-md shadow-sm">
                 <h4 class="font-semibold text-gray-800">{{ __('Tus datos') }}</h4>
                 <dl class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
