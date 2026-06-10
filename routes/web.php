@@ -25,6 +25,17 @@ Route::get('/', function () {
 
 Route::middleware('auth')->prefix('verificacion')->name('verificacion.')->group(function () {
     Route::get('/estado', [VerificacionController::class, 'estado'])->name('estado');
+    Route::get('/estado-json', [VerificacionController::class, 'estadoJson'])->name('estado-json');
+
+    Route::get('/paso-1', [VerificacionController::class, 'mostrarPaso1'])->name('paso1');
+    Route::post('/paso-1', [VerificacionController::class, 'guardarPaso1'])->name('paso1.guardar');
+    Route::get('/paso-2', [VerificacionController::class, 'mostrarPaso2'])->name('paso2');
+    Route::post('/paso-2', [VerificacionController::class, 'guardarPaso2'])->name('paso2.guardar');
+    Route::get('/paso-3', [VerificacionController::class, 'mostrarPaso3'])->name('paso3');
+    Route::post('/paso-3', [VerificacionController::class, 'guardarPaso3'])->name('paso3.guardar');
+
+    Route::get('/procesando', [VerificacionController::class, 'procesando'])->name('procesando');
+    Route::get('/resultado', [VerificacionController::class, 'mostrarResultado'])->name('resultado');
 });
 
 /*
