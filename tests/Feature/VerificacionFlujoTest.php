@@ -127,6 +127,7 @@ test('paso 3 sin cedula cargada redirige al paso 2', function () {
 });
 
 test('paso 3 guarda la selfie y marca el registro en proceso', function () {
+    Illuminate\Support\Facades\Queue::fake();
     completarPaso1($this);
     completarPaso2($this);
 
@@ -160,6 +161,7 @@ test('endpoint de estado json responde el estado actual', function () {
 });
 
 test('pantalla procesando se muestra solo en proceso', function () {
+    Illuminate\Support\Facades\Queue::fake();
     completarPaso1($this);
     completarPaso2($this);
     $this->actingAs($this->usuaria)->post('/verificacion/paso-3', [

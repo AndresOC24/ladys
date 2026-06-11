@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Verificacion\Paso1Request;
 use App\Http\Requests\Verificacion\Paso2Request;
 use App\Http\Requests\Verificacion\Paso3Request;
+use App\Jobs\ProcesarVerificacion;
 use App\Models\Documento;
 use App\Models\RegistroVerificacion;
 use App\Models\Usuaria;
@@ -134,9 +135,6 @@ class VerificacionController extends Controller
 
     /**
      * Step 3: store the selfie and queue the verification.
-     *
-     * La llamada real al servicio de IA se integra en la Fase 5;
-     * por ahora el registro solo queda marcado como en_proceso.
      */
     public function guardarPaso3(Paso3Request $request): RedirectResponse
     {
@@ -155,6 +153,8 @@ class VerificacionController extends Controller
 
         $registro->update(['estado' => 'en_proceso']);
         $usuaria->update(['estado_verificacion' => 'en_proceso']);
+
+        ProcesarVerificacion::dispatch($registro);
 
         return redirect()->route('verificacion.procesando');
     }
