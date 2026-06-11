@@ -34,20 +34,23 @@
             <div class="card-header"><h3 class="card-title">Evidencias</h3></div>
             <div class="card-body">
                 <div class="row g-3">
-                    @foreach (['selfie' => 'Captura en vivo', 'anverso' => 'Cédula — anverso', 'reverso' => 'Cédula — reverso'] as $tipo => $titulo)
-                        <div class="col-md-4">
+                    @foreach (['selfie' => 'Captura en vivo', 'rostro_cedula' => 'Rostro extraído de la cédula', 'anverso' => 'Cédula — anverso', 'reverso' => 'Cédula — reverso'] as $tipo => $titulo)
+                        <div class="col-md-3 col-sm-6">
                             <div class="text-muted small mb-1">{{ $titulo }}</div>
                             @if ($documentos->has($tipo))
                                 <a href="{{ backpack_url('documento/'.$documentos[$tipo]->id) }}" target="_blank" title="Abrir en tamaño completo">
                                     <img src="{{ backpack_url('documento/'.$documentos[$tipo]->id) }}"
-                                        alt="{{ $titulo }}" class="img-fluid rounded border" style="max-height: 320px; object-fit: contain; width: 100%; background: #f8fafc;">
+                                        alt="{{ $titulo }}" class="img-fluid rounded border" style="max-height: 280px; object-fit: contain; width: 100%; background: #f8fafc;">
                                 </a>
-                                <div class="text-muted small mt-1" style="word-break: break-all;">SHA256: {{ $documentos[$tipo]->hash_archivo }}</div>
+                                <div class="text-muted small mt-1" style="word-break: break-all;">SHA256: {{ Str::limit($documentos[$tipo]->hash_archivo, 24) }}</div>
                             @else
-                                <div class="alert alert-warning mb-0">No cargado</div>
+                                <div class="alert alert-warning mb-0">{{ $tipo === 'rostro_cedula' ? 'No extraído' : 'No cargado' }}</div>
                             @endif
                         </div>
                     @endforeach
+                </div>
+                <div class="text-muted small mt-2">
+                    Compara lado a lado la <strong>captura en vivo</strong> con el <strong>rostro extraído de la cédula</strong>: es la misma comparación que hizo el módulo facial.
                 </div>
             </div>
         </div>
@@ -96,10 +99,15 @@
                 @if ($datos)
                     <dl class="row mb-0">
                         <dt class="col-5">Número de cédula</dt><dd class="col-7">{{ $datos->numero_cedula ?? '—' }}</dd>
+                        <dt class="col-5">Serie / Sección</dt><dd class="col-7">{{ $datos->serie ?? '—' }} / {{ $datos->seccion ?? '—' }}</dd>
                         <dt class="col-5">Nombre completo</dt><dd class="col-7">{{ $datos->nombre_completo ?? '—' }}</dd>
                         <dt class="col-5">Fecha de nacimiento</dt><dd class="col-7">{{ $datos->fecha_nacimiento?->format('d/m/Y') ?? '—' }}</dd>
                         <dt class="col-5">Fecha de emisión</dt><dd class="col-7">{{ $datos->fecha_emision?->format('d/m/Y') ?? '—' }}</dd>
                         <dt class="col-5">Fecha de expiración</dt><dd class="col-7">{{ $datos->fecha_vencimiento?->format('d/m/Y') ?? '—' }}</dd>
+                        <dt class="col-5">Lugar de nacimiento</dt><dd class="col-7">{{ $datos->lugar_nacimiento ?? '—' }}</dd>
+                        <dt class="col-5">Domicilio</dt><dd class="col-7">{{ $datos->domicilio ?? '—' }}</dd>
+                        <dt class="col-5">Ocupación</dt><dd class="col-7">{{ $datos->ocupacion ?? '—' }}</dd>
+                        <dt class="col-5">Estado civil</dt><dd class="col-7">{{ $datos->estado_civil ?? '—' }}</dd>
                     </dl>
                     <hr>
                     <div class="text-muted small">

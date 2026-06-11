@@ -48,12 +48,13 @@ class ProcesarVerificacion implements ShouldQueue
         // alguna falle, para que la revisión administrativa vea el cuadro completo.
         $liveness = $ia->detectarLiveness($rutaSelfie, $umbralLiveness);
         $facial = $ia->verificarRostro($rutaSelfie, $rutaAnverso, $umbralFacial);
-        $ocr = $ia->extraerDatosCedula($rutaAnverso);
+        $ocr = $ia->extraerDatosCedula($rutaAnverso, $this->rutaDocumento('reverso'));
 
         $decision = $evaluador->evaluar($liveness, $facial, $ocr);
 
         $this->guardarResultados($decision['componentes']);
         $this->guardarDatosDocumento($ocr);
+        $this->guardarRostroCedula($ia, $rutaAnverso);
         $this->resolver($decision['veredicto']);
 
         Log::info('Verificación procesada', [
@@ -116,13 +117,59 @@ class ProcesarVerificacion implements ShouldQueue
             ['registro_verificacion_id' => $this->registro->id],
             [
                 'numero_cedula' => $datos['numero_cedula'] ?? null,
+                'serie' => $datos['serie'] ?? null,
+                'seccion' => $datos['seccion'] ?? null,
                 'nombre_completo' => $datos['nombre_completo'] ?? null,
                 'fecha_nacimiento' => $datos['fecha_nacimiento'] ?? null,
                 'fecha_emision' => $datos['fecha_emision'] ?? null,
                 'fecha_vencimiento' => $datos['fecha_vencimiento'] ?? null,
                 'lugar_nacimiento' => $datos['lugar_nacimiento'] ?? null,
+                'domicilio' => $datos['domicilio'] ?? null,
+                'ocupacion' => $datos['ocupacion'] ?? null,
+                'estado_civil' => $datos['estado_civil'] ?? null,
             ]
         );
+    }
+
+    /**
+     * Guarda el recorte del rostro impreso en la cédula como evidencia
+     * adicional para la revisión administrativa. Si el servicio no puede
+     * extraerlo no bloquea el flujo: la verificación 1:1 ya lo comparó.
+     */
+    protected function guardarRostroCedula(ServicioIA $ia, string $rutaAnverso): void
+    {
+        try {
+            $recorte = $ia->extraerRostroCedula($rutaAnverso);
+        } catch (Throwable $excepcion) {
+            Log::warning('No se pudo extraer el rostro de la cédula', [
+                'registro' => $this->registro->id,
+                'error' => $excepcion->getMessage(),
+            ]);
+
+            return;
+        }
+
+        if ($recorte === null) {
+            return;
+        }
+
+        $ruta = sprintf('rostros/%d_rostro_cedula_%d.jpg', $this->registro->id, now()->getTimestamp());
+        Storage::disk('private')->put($ruta, $recorte);
+
+        $existente = $this->registro->documentos()->where('tipo', 'rostro_cedula')->first();
+
+        if ($existente) {
+            Storage::disk('private')->delete($existente->ruta_archivo);
+            $existente->update(['ruta_archivo' => $ruta, 'hash_archivo' => hash('sha256', $recorte)]);
+
+            return;
+        }
+
+        $this->registro->documentos()->create([
+            'tipo' => 'rostro_cedula',
+            'ruta_archivo' => $ruta,
+            'hash_archivo' => hash('sha256', $recorte),
+        ]);
     }
 
     protected function resolver(string $estado, bool $resuelto = true): void

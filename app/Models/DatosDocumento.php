@@ -12,11 +12,16 @@ class DatosDocumento extends Model
     protected $fillable = [
         'registro_verificacion_id',
         'numero_cedula',
+        'serie',
+        'seccion',
         'nombre_completo',
         'fecha_nacimiento',
         'fecha_emision',
         'fecha_vencimiento',
         'lugar_nacimiento',
+        'domicilio',
+        'ocupacion',
+        'estado_civil',
     ];
 
     protected function casts(): array

@@ -40,12 +40,29 @@ class ServicioIA
         );
     }
 
-    public function extraerDatosCedula(string $rutaCedula): array
+    public function extraerDatosCedula(string $rutaCedula, ?string $rutaReverso = null): array
     {
         $peticion = $this->cliente()
             ->attach('cedula', file_get_contents($rutaCedula), basename($rutaCedula));
 
+        if ($rutaReverso !== null) {
+            $peticion->attach('reverso', file_get_contents($rutaReverso), basename($rutaReverso));
+        }
+
         return $this->interpretar($peticion->post('/ocr-cedula'));
+    }
+
+    /**
+     * Recorte JPEG del rostro impreso en el documento, o null si el servicio
+     * no pudo extraerlo (es un dato complementario, no bloquea el flujo).
+     */
+    public function extraerRostroCedula(string $rutaCedula): ?string
+    {
+        $respuesta = $this->cliente()
+            ->attach('cedula', file_get_contents($rutaCedula), basename($rutaCedula))
+            ->post('/extraer-rostro');
+
+        return $respuesta->successful() ? $respuesta->body() : null;
     }
 
     protected function cliente(): PendingRequest

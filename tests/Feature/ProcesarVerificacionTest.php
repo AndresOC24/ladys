@@ -40,16 +40,23 @@ function fakeIa(array $liveness = [], array $facial = [], array $ocr = []): void
         ]),
         '*/ocr-cedula' => Http::response($ocr + [
             'numero_cedula' => '1234567',
+            'serie' => '21333',
+            'seccion' => '11222',
             'nombre_completo' => 'MARIA RENEE RODRIGUEZ GONZALEZ',
             'fecha_nacimiento' => '2003-04-05',
             'fecha_emision' => '2023-11-01',
             'fecha_vencimiento' => '2028-11-01',
-            'lugar_nacimiento' => null,
-            'campos_detectados' => 5,
+            'lugar_nacimiento' => 'SANTA CRUZ DE LA SIERRA',
+            'domicilio' => 'C. LAS PALMERAS NRO 7424',
+            'ocupacion' => 'ESTUDIANTE',
+            'estado_civil' => 'SOLTERA',
+            'mrz_detectado' => true,
+            'campos_detectados' => 11,
             'confianza_promedio' => 0.92,
             'texto_crudo' => [],
             'tiempo_ms' => 900,
         ]),
+        '*/extraer-rostro' => Http::response('bytes-jpeg-recorte', 200, ['Content-Type' => 'image/jpeg']),
     ]);
 }
 
@@ -76,6 +83,45 @@ test('todo correcto resulta en aprobada con 3 resultados y datos del documento',
         ->and($this->registro->resultadosValidacion->pluck('resultado')->unique()->all())->toBe(['aprobado'])
         ->and($this->registro->datosDocumento->numero_cedula)->toBe('1234567')
         ->and($this->registro->datosDocumento->nombre_completo)->toBe('MARIA RENEE RODRIGUEZ GONZALEZ');
+});
+
+test('los campos completos de la cedula y el rostro extraido quedan persistidos', function () {
+    fakeIa();
+
+    ejecutarJob($this->registro);
+
+    $datos = $this->registro->refresh()->datosDocumento;
+
+    expect($datos->serie)->toBe('21333')
+        ->and($datos->seccion)->toBe('11222')
+        ->and($datos->lugar_nacimiento)->toBe('SANTA CRUZ DE LA SIERRA')
+        ->and($datos->domicilio)->toBe('C. LAS PALMERAS NRO 7424')
+        ->and($datos->ocupacion)->toBe('ESTUDIANTE')
+        ->and($datos->estado_civil)->toBe('SOLTERA');
+
+    $rostro = $this->registro->documentos()->where('tipo', 'rostro_cedula')->first();
+
+    expect($rostro)->not->toBeNull()
+        ->and($rostro->hash_archivo)->toBe(hash('sha256', 'bytes-jpeg-recorte'));
+    Storage::disk('private')->assertExists($rostro->ruta_archivo);
+
+    // El OCR debe haber recibido tambien el reverso.
+    Http::assertSent(fn ($request) => str_contains($request->url(), 'ocr-cedula')
+        && collect($request->data())->contains(fn ($d) => is_array($d) ? ($d['name'] ?? null) === 'reverso' : false));
+});
+
+test('si el recorte del rostro falla el flujo continua sin bloquearse', function () {
+    Http::fake([
+        '*/extraer-rostro' => Http::response(['detail' => 'sin rostro'], 422),
+        '*/detectar-liveness' => Http::response(['es_real' => true, 'score' => 0.95, 'umbral_aplicado' => 0.85, 'tiempo_ms' => 1]),
+        '*/verificar-rostro' => Http::response(['distancia' => 0.51, 'umbral_aplicado' => 0.68, 'coincide' => true, 'modelo' => 'ArcFace', 'tiempo_ms' => 1]),
+        '*/ocr-cedula' => Http::response(['numero_cedula' => '1234567', 'serie' => null, 'seccion' => null, 'nombre_completo' => 'MARIA RENEE RODRIGUEZ', 'fecha_nacimiento' => '2003-04-05', 'fecha_emision' => '2023-11-01', 'fecha_vencimiento' => '2028-11-01', 'lugar_nacimiento' => null, 'domicilio' => null, 'ocupacion' => null, 'estado_civil' => null, 'mrz_detectado' => false, 'campos_detectados' => 5, 'confianza_promedio' => 0.9, 'texto_crudo' => [], 'tiempo_ms' => 1]),
+    ]);
+
+    ejecutarJob($this->registro);
+
+    expect($this->registro->refresh()->estado)->toBe('aprobada')
+        ->and($this->registro->documentos()->where('tipo', 'rostro_cedula')->exists())->toBeFalse();
 });
 
 test('liveness fallido resulta en rechazada', function () {
