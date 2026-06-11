@@ -22,14 +22,14 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 gap-2">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center min-h-[44px] px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-xl text-slate-600 bg-white/0 hover:text-slate-800 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 transition ease-out duration-200 cursor-pointer">
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </div>
@@ -38,7 +38,7 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Mi perfil') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -48,11 +48,23 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Cerrar sesión') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
                 </x-dropdown>
+
+                <!-- Logout siempre visible: no depende del dropdown -->
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" aria-label="Cerrar sesión" title="Cerrar sesión"
+                        class="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-2 text-sm font-medium rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 transition ease-out duration-200 cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                        </svg>
+                        <span class="hidden md:inline">{{ __('Salir') }}</span>
+                    </button>
+                </form>
             </div>
 
             <!-- Hamburger -->
