@@ -16,6 +16,10 @@ use App\Models\ParametroControl;
  */
 class EvaluadorVerificacion
 {
+    public function __construct(
+        protected ValidadorEstructuralCedula $validadorCedula,
+    ) {}
+
     /**
      * @param  array  $liveness  Respuesta de ServicioIA::detectarLiveness
      * @param  array  $facial  Respuesta de ServicioIA::verificarRostro
@@ -95,29 +99,17 @@ class EvaluadorVerificacion
         }
 
         $datos = $respuesta['datos'];
-        $regexCedula = ParametroControl::valorDe('regex_cedula', '^[0-9]{7,8}$');
-        $longitudMinima = (int) ParametroControl::valorDe('longitud_min_nombre', '3');
-
-        $faltantes = [];
-
-        $numero = $datos['numero_cedula'] ?? null;
-        if (! $numero || ! preg_match('/'.$regexCedula.'/', $numero)) {
-            $faltantes[] = 'número de cédula';
-        }
-
-        $nombre = trim($datos['nombre_completo'] ?? '');
-        if (mb_strlen($nombre) < $longitudMinima) {
-            $faltantes[] = 'nombre completo';
-        }
+        $validacion = $this->validadorCedula->validar($datos);
 
         return [
-            'resultado' => $faltantes === [] ? 'aprobado' : 'dudoso',
+            'resultado' => $validacion['valido'] ? 'aprobado' : 'dudoso',
             'puntaje' => $datos['confianza_promedio'] ?? null,
             'detalles' => [
                 'campos_detectados' => $datos['campos_detectados'] ?? 0,
-                'motivo' => $faltantes === []
+                'errores_estructurales' => $validacion['errores'],
+                'motivo' => $validacion['valido']
                     ? null
-                    : 'El OCR no pudo validar: '.implode(', ', $faltantes).'. Requiere revisión humana.',
+                    : 'Validación estructural del documento: '.implode(' ', $validacion['errores']).' Requiere revisión humana.',
             ],
         ];
     }

@@ -51,5 +51,18 @@ class ParametroControlCrudController extends CrudController
     {
         $this->setupCreateOperation();
         CRUD::field('clave')->attributes(['readonly' => 'readonly']);
+
+        // Al editar, el campo "valor" explica exactamente qué controla este
+        // parámetro y cómo impacta en la decisión automática.
+        $entrada = $this->crud->getCurrentEntry();
+
+        if ($entrada && $entrada->descripcion) {
+            CRUD::field('valor')->hint(
+                '<strong>Qué controla:</strong> '.e($entrada->descripcion).
+                ($entrada->categoria === 'biometrico'
+                    ? ' <br><strong>Impacto:</strong> los cambios aplican a las verificaciones que se procesen desde ahora.'
+                    : ' <br><strong>Impacto:</strong> si la validación estructural falla, el caso pasa a revisión administrativa con el motivo detallado.')
+            );
+        }
     }
 }

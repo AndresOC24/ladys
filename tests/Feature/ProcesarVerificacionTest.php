@@ -119,6 +119,29 @@ test('ocr sin campos minimos deriva a revision administrativa', function () {
         ->and($this->registro->resultadosValidacion()->where('tipo', 'ocr')->first()->resultado)->toBe('dudoso');
 });
 
+test('ocr con fechas incoherentes deriva a revision con motivo estructural', function () {
+    fakeIa(ocr: ['fecha_nacimiento' => '2025-01-01', 'fecha_emision' => '2023-11-01']);
+
+    ejecutarJob($this->registro);
+
+    $ocr = $this->registro->resultadosValidacion()->where('tipo', 'ocr')->first();
+
+    expect($this->registro->refresh()->estado)->toBe('en_revision')
+        ->and($ocr->resultado)->toBe('dudoso')
+        ->and($ocr->detalles['motivo'])->toContain('incoherentes')
+        ->and($ocr->detalles['errores_estructurales'])->not->toBeEmpty();
+});
+
+test('ocr con documento vencido deriva a revision con motivo de vigencia', function () {
+    fakeIa(ocr: ['fecha_vencimiento' => now()->subMonth()->toDateString()]);
+
+    ejecutarJob($this->registro);
+
+    expect($this->registro->refresh()->estado)->toBe('en_revision')
+        ->and($this->registro->resultadosValidacion()->where('tipo', 'ocr')->first()->detalles['motivo'])
+        ->toContain('vencido');
+});
+
 test('selfie sin rostro detectable (422) resulta en rechazada con motivo', function () {
     Http::fake([
         '*/detectar-liveness' => Http::response(['detail' => 'No se detecto un rostro en la captura.'], 422),

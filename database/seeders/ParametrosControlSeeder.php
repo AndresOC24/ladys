@@ -40,6 +40,12 @@ class ParametrosControlSeeder extends Seeder
                 'valor' => '3',
                 'descripcion' => 'Longitud mínima aceptada para el nombre completo extraído por OCR',
             ],
+            [
+                'categoria' => 'documento',
+                'clave' => 'campos_obligatorios',
+                'valor' => 'numero_cedula,nombre_completo,fecha_nacimiento,fecha_emision,fecha_vencimiento',
+                'descripcion' => 'Campos que el OCR debe poder leer del documento, separados por coma; si falta alguno el caso pasa a revisión administrativa',
+            ],
         ];
 
         foreach ($parametros as $parametro) {
