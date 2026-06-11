@@ -16,6 +16,15 @@ Route::group([
     ),
     'namespace' => 'App\Http\Controllers\Admin',
 ], function () { // custom admin routes
+    Route::crud('usuaria', 'UsuariaCrudController');
+    Route::crud('registro-verificacion', 'RegistroVerificacionCrudController');
+    Route::crud('parametro-control', 'ParametroControlCrudController');
+    Route::crud('rol', 'RolCrudController');
+
+    Route::get('revision/{registro}', 'RevisionAdminController@show')->name('admin.revision.show');
+    Route::post('revision/{registro}', 'RevisionAdminController@decidir')->name('admin.revision.decidir');
+
+    Route::get('documento/{documento}', 'DocumentoAdminController@show')->name('admin.documento.show');
 }); // this should be the absolute last line of this file
 
 /**

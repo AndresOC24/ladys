@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class RegistroVerificacion extends Model
 {
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
+
     protected $table = 'registros_verificacion';
 
     protected $fillable = ['usuaria_id', 'fecha_inicio', 'fecha_resolucion', 'estado'];

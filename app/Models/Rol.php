@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Rol extends Model
 {
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
+
     protected $table = 'roles';
 
     protected $fillable = ['nombre', 'descripcion'];

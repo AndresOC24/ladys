@@ -13,6 +13,7 @@ class Usuaria extends Authenticatable
 {
     /** @use HasFactory<UsuariaFactory> */
     use HasFactory, Notifiable;
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
 
     protected $table = 'users';
 
